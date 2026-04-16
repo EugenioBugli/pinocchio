@@ -1,0 +1,39 @@
+name: Build and publish conda package
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build (${{ matrix.target.platform }})
+    runs-on: ${{ matrix.target.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - { platform: linux-64,    runner: ubuntu-24.04      }
+          - { platform: linux-aarch64, runner: ubuntu-24.04-arm }
+
+    permissions:
+      id-token: write  # required for prefix.dev attestation
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build package
+        uses: prefix-dev/rattler-build-action@v0.2.24
+        with:
+          recipe-path: recipe/recipe.yaml
+          rattler-build-version: latest
+
+      - name: Upload to prefix.dev
+        run: |
+          rattler-build upload prefix \
+            --channel spqr \
+            --generate-attestation \
+            output/${{ matrix.target.platform }}/*.conda

@@ -1,0 +1,38 @@
+schema_version: 1
+
+package:
+  name: pinocchio
+  version: "3.8.0"
+
+source:
+  path: ..
+
+build:
+  script: build.sh
+
+requirements:
+  build:
+    - cmake >=3.22
+    - ninja
+    - pkg-config
+    - ${{ compiler("cxx") }}
+  host:
+    - boost >=1.65
+    - eigen >=3.4,<4
+    - eigenpy >=3.1.0
+    - hpp-fcl >=2.4
+    - python
+    - numpy
+  run:
+    - boost >=1.65
+    - eigenpy >=3.1.0
+    - hpp-fcl >=2.4
+    - python
+    - numpy
+    # intentionally no urdfdom / tinyxml2 — URDF support disabled to avoid
+    # pulling tinyxml2==6, which conflicts with booster_robotics_sdk (tinyxml2==9)
+
+about:
+  homepage: https://github.com/stack-of-tasks/pinocchio
+  license: BSD-2-Clause
+  summary: A fast and flexible implementation of Rigid Body Dynamics algorithms and their analytical derivatives
